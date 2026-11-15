@@ -1378,8 +1378,80 @@ app.post('/api/skills/:scope/:name/file', async (req, res) => {
   }
 });
 
+// Auto-sync bundled skills into Library & Global config
+async function syncBundledSkills() {
+  try {
+    const bundledDir = path.join(__dirname, 'bundled-skills');
+    if (!(await fs.pathExists(bundledDir))) return 0;
+
+    const meta = await getLibraryMeta();
+    let changed = false;
+    let syncedCount = 0;
+
+    const entries = await fs.readdir(bundledDir);
+    for (const entry of entries) {
+      const srcPath = path.join(bundledDir, entry);
+      const stat = await fs.stat(srcPath);
+      if (!stat.isDirectory()) continue;
+
+      const skillMdPath = path.join(srcPath, 'SKILL.md');
+      if (!(await fs.pathExists(skillMdPath))) continue;
+
+      const libSkillPath = path.join(LIBRARY_DIR, entry);
+      const globalSkillPath = path.join(GLOBAL_SKILLS_DIR, entry);
+
+      // If missing from library or global, auto-install
+      if (!(await fs.pathExists(libSkillPath)) || !(await fs.pathExists(globalSkillPath))) {
+        await fs.ensureDir(libSkillPath);
+        await fs.copy(srcPath, libSkillPath, { overwrite: true });
+
+        await fs.ensureDir(globalSkillPath);
+        await fs.copy(srcPath, globalSkillPath, { overwrite: true });
+
+        let desc = 'Bundled Agent Skill';
+        try {
+          const raw = await fs.readFile(skillMdPath, 'utf8');
+          const parsed = matter(raw);
+          if (parsed.data && parsed.data.description) desc = parsed.data.description;
+        } catch (e) {}
+
+        meta[entry] = {
+          name: entry,
+          targetScope: 'global',
+          isActive: true,
+          description: desc,
+          source: 'bundled-preset',
+          addedAt: new Date().toISOString()
+        };
+        changed = true;
+        syncedCount++;
+      }
+    }
+
+    if (changed) {
+      await saveLibraryMeta(meta);
+      console.log(`[Bundled Skills] Auto-synced ${syncedCount} preset skills to Library and Global config!`);
+    }
+    return syncedCount;
+  } catch (err) {
+    console.warn('[Bundled Skills] Error during auto-sync:', err.message);
+    return 0;
+  }
+}
+
+// API to manually trigger sync of bundled skills
+app.post('/api/library/sync-bundled', async (req, res) => {
+  try {
+    const count = await syncBundledSkills();
+    res.json({ success: true, count, message: 'Bundled skills synced successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await syncBundledSkills();
   console.log(`\n======================================================`);
   console.log(`🚀 Antigravity Skill Manager is running!`);
   console.log(`🌐 Local Web UI: http://localhost:${PORT}`);
