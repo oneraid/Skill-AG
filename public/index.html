@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Antigravity Skill Manager</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Marked.js -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-indigo-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-30 glass-panel border-b border-slate-800/80 px-6 py-3.5">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <!-- Logo & Title -->
+      <div class="flex items-center justify-between w-full md:w-auto">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="font-bold text-lg tracking-tight text-white flex items-center gap-1.5">
+                Antigravity <span class="bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">Skill Manager</span>
+              </h1>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">v1.2</span>
+            </div>
+            <p class="text-xs text-slate-400">Manage, Activate & Toggle AI Agent Skills</p>
+          </div>
+        </div>
+
+        <!-- Mobile Add Button -->
+        <button class="btnOpenAddModal md:hidden p-2 rounded-lg bg-indigo-600 text-white">
+          <i data-lucide="plus" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Navigation Tabs: Library vs All Explorer -->
+      <div class="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+        <button id="navTabLibrary" class="flex items-center gap-2 px-4 py-2 rounded-lg transition nav-tab-active">
+          <i data-lucide="bookmark-check" class="w-4 h-4"></i>
+          <span>Skill Library</span>
+          <span id="navLibraryCountBadge" class="ml-1 text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-500/20 text-indigo-300 font-mono">0</span>
+        </button>
+        <button id="navTabExplorer" class="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-400 hover:text-white transition">
+          <i data-lucide="compass" class="w-4 h-4"></i>
+          <span>All Explorer</span>
+          <span id="navExplorerCountBadge" class="ml-1 text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-400 font-mono">0</span>
+        </button>
+      </div>
+
+      <!-- Workspace & Actions -->
+      <div class="flex items-center gap-2.5">
+        <!-- Workspace display -->
+        <div class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300">
+          <i data-lucide="folder-git-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span id="currentWorkspaceDisplay" class="font-mono text-slate-200 max-w-[180px] truncate" title="Active workspace">Loading...</span>
+          <button id="btnSwitchWorkspace" class="px-2 py-0.5 rounded text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition">
+            Switch
+          </button>
+        </div>
+
+        <button id="btnRefresh" title="Refresh Skills" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        </button>
+
+        <button class="btnOpenAddModal hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs shadow-md shadow-indigo-600/30 transition">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Add Skill</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-6">
+
+    <!-- ============================================== -->
+    <!-- VIEW 1: SKILL LIBRARY (Default & Requested UI)  -->
+    <!-- ============================================== -->
+    <div id="viewLibrary" class="space-y-6">
+
+      <!-- Hero Banner for Library -->
+      <div class="glass-panel p-5 rounded-2xl border border-indigo-500/20 bg-gradient-to-r from-indigo-950/30 via-slate-900/60 to-purple-950/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="p-1 rounded-md bg-indigo-500/20 text-indigo-400">
+              <i data-lucide="library" class="w-4 h-4"></i>
+            </span>
+            <h2 class="text-base font-bold text-white">Skill Library (Perpustakaan Skill)</h2>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              ON / OFF Instant Toggle
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 max-w-2xl leading-relaxed">
+            Koleksi skill kustom Anda. Nyalakan switch <b class="text-emerald-400">ON</b> agar AI Agent menggunakan skill tersebut, atau matikan <b class="text-slate-400">OFF</b> kapan saja tanpa kehilangan file.
+          </p>
+        </div>
+
+        <button class="btnOpenAddModal flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-lg shadow-indigo-600/30 transition">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>Add Skill to Library</span>
+        </button>
+      </div>
+
+      <!-- Library Stats Bar -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="glass-panel p-4 rounded-xl border border-slate-800/80 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-medium text-slate-400">Total in Library</p>
+            <p id="libStatTotal" class="text-2xl font-bold text-white mt-1">0</p>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
+            <i data-lucide="bookmark" class="w-5 h-5"></i>
+          </div>
+        </div>
+
+        <div class="glass-panel p-4 rounded-xl border border-emerald-500/20 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-medium text-emerald-400">Aktif (ON)</p>
+            <p id="libStatActive" class="text-2xl font-bold text-emerald-400 mt-1">0</p>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+            <i data-lucide="power" class="w-5 h-5"></i>
+          </div>
+        </div>
+
+        <div class="glass-panel p-4 rounded-xl border border-slate-800/80 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-medium text-slate-400">Nonaktif (OFF)</p>
+            <p id="libStatInactive" class="text-2xl font-bold text-slate-400 mt-1">0</p>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center">
+            <i data-lucide="power-off" class="w-5 h-5"></i>
+          </div>
+        </div>
+
+        <div class="glass-panel p-4 rounded-xl border border-slate-800/80 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-medium text-slate-400">Target Scope</p>
+            <p class="text-xs font-mono font-bold text-slate-200 mt-1 truncate max-w-[120px]">Workspace & Global</p>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
+            <i data-lucide="layers" class="w-5 h-5"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Library Search & Filter Bar -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+        <!-- Search Input -->
+        <div class="relative flex-1 max-w-md">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+          <input
+            id="librarySearchInput"
+            type="text"
+            placeholder="Cari skill di Library... (/)"
+            class="w-full pl-10 pr-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+          />
+        </div>
+
+        <!-- Filter pills -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 text-xs">
+          <button data-libfilter="all" class="lib-filter-btn px-3 py-1.5 rounded-lg font-medium transition bg-indigo-600 text-white">
+            Semua (<span id="libCountAll">0</span>)
+          </button>
+          <button data-libfilter="active" class="lib-filter-btn px-3 py-1.5 rounded-lg font-medium transition bg-slate-900 text-emerald-400 hover:bg-slate-800 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>Aktif (ON)</span>
+          </button>
+          <button data-libfilter="inactive" class="lib-filter-btn px-3 py-1.5 rounded-lg font-medium transition bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+            <span>Nonaktif (OFF)</span>
+          </button>
+          <button data-libfilter="workspace" class="lib-filter-btn px-3 py-1.5 rounded-lg font-medium transition bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800">
+            Workspace
+          </button>
+          <button data-libfilter="global" class="lib-filter-btn px-3 py-1.5 rounded-lg font-medium transition bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800">
+            Global
+          </button>
+        </div>
+      </div>
+
+      <!-- Library Cards Grid -->
+      <div id="libraryContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Injected dynamically by app.js -->
+      </div>
+
+      <!-- Library Empty State -->
+      <div id="libraryEmptyState" class="hidden flex-col items-center justify-center py-16 text-center space-y-3 glass-panel rounded-2xl border border-slate-800/80 p-8">
+        <div class="w-16 h-16 rounded-2xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+          <i data-lucide="bookmark-plus" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-base font-semibold text-slate-200">Library Skill Anda Masih Kosong</h3>
+        <p class="text-xs text-slate-400 max-w-md leading-relaxed">
+          Belum ada skill yang tersimpan di Library. Tambahkan skill baru Anda sendiri atau jelajahi 60+ Built-in Skills bawaan Antigravity dan impor ke Library dengan satu klik!
+        </p>
+        <div class="flex items-center gap-3 pt-2">
+          <button class="btnOpenAddModal px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/30 transition flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Buat Skill Baru</span>
+          </button>
+          <button id="btnSwitchToExplorer" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition flex items-center gap-2">
+            <i data-lucide="compass" class="w-4 h-4 text-indigo-400"></i>
+            <span>Jelajahi Built-in Skills</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================== -->
+    <!-- VIEW 2: ALL SKILLS EXPLORER                    -->
+    <!-- ============================================== -->
+    <div id="viewExplorer" class="hidden space-y-6">
+
+      <!-- Explorer Info Bar -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 glass-panel p-4 rounded-xl border border-slate-800/80">
+        <div>
+          <h2 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="compass" class="w-4 h-4 text-indigo-400"></i>
+            <span>All Discovered Skills Explorer</span>
+          </h2>
+          <p class="text-xs text-slate-400">Semua skills dari Workspace, Global, Plugin, dan Built-in Antigravity. Anda dapat mengimpor skill apa pun ke Library Anda.</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span class="text-slate-400">Total ditemukan:</span>
+          <span id="statTotal" class="font-bold text-white font-mono bg-slate-800 px-2.5 py-1 rounded-lg">0</span>
+        </div>
+      </div>
+
+      <!-- Explorer Stats Bar -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="glass-panel p-3.5 rounded-xl border border-slate-800 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-slate-400">Workspace</p>
+            <p id="statWorkspace" class="text-xl font-bold text-emerald-400 mt-0.5">0</p>
+          </div>
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+            <i data-lucide="folder-code" class="w-4 h-4"></i>
+          </div>
+        </div>
+        <div class="glass-panel p-3.5 rounded-xl border border-slate-800 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-slate-400">Global</p>
+            <p id="statGlobal" class="text-xl font-bold text-cyan-400 mt-0.5">0</p>
+          </div>
+          <div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
+            <i data-lucide="globe" class="w-4 h-4"></i>
+          </div>
+        </div>
+        <div class="glass-panel p-3.5 rounded-xl border border-slate-800 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-slate-400">Plugins</p>
+            <p id="statPlugins" class="text-xl font-bold text-purple-400 mt-0.5">0</p>
+          </div>
+          <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
+            <i data-lucide="package" class="w-4 h-4"></i>
+          </div>
+        </div>
+        <div class="glass-panel p-3.5 rounded-xl border border-slate-800 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-slate-400">Built-in</p>
+            <p id="statBuiltin" class="text-xl font-bold text-amber-400 mt-0.5">0</p>
+          </div>
+          <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
+            <i data-lucide="shield" class="w-4 h-4"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Explorer Search & Filters -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+        <!-- Search Input -->
+        <div class="relative flex-1 max-w-md">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Search all skills by keyword..."
+            class="w-full pl-10 pr-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+          />
+        </div>
+
+        <!-- Scope Filters -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 text-xs">
+          <button data-filter="all" class="filter-btn px-3 py-1.5 rounded-lg font-medium transition bg-indigo-600 text-white">
+            All (<span id="countAll">0</span>)
+          </button>
+          <button data-filter="workspace" class="filter-btn px-3 py-1.5 rounded-lg font-medium transition bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800">
+            Workspace
+          </button>
+          <button data-filter="global" class="filter-btn px-3 py-1.5 rounded-lg font-medium transition bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800">
+            Global
+          </button>
+          <button data-filter="plugin" class="filter-btn px-3 py-1.5 rounded-lg font-medium transition bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800">
+            Plugins
+          </button>
+          <button data-filter="builtin" class="filter-btn px-3 py-1.5 rounded-lg font-medium transition bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800">
+            Built-in
+          </button>
+        </div>
+      </div>
+
+      <!-- Explorer Grid -->
+      <div id="skillsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Injected dynamically -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden flex-col items-center justify-center py-16 text-center space-y-3">
+        <div class="w-16 h-16 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500">
+          <i data-lucide="package-search" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-base font-semibold text-slate-300">No skills found</h3>
+        <p class="text-sm text-slate-500 max-w-sm">No skills matched your search.</p>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-auto border-t border-slate-800/60 py-4 px-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>Antigravity Skill Manager &bull; Library with Instant ON/OFF Toggle</p>
+      <p class="font-mono text-slate-600">Local port: 3456</p>
+    </div>
+  </footer>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- 1. Add / Import Skill Modal (GitHub, OpenClaw, ZIP, Manual) -->
+  <div id="addSkillModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center">
+            <i data-lucide="bookmark-plus" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-white">Add Skill to Library</h2>
+            <p class="text-xs text-slate-400">Import dari GitHub / OpenClaw, Upload ZIP, atau Buat Baru</p>
+          </div>
+        </div>
+        <button class="modal-close p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Add Modal Mode Tabs -->
+      <div class="px-6 border-b border-slate-800 flex items-center gap-2 text-xs font-semibold bg-slate-950/40">
+        <button id="tabAddUrl" class="py-2.5 px-3 border-b-2 border-indigo-500 text-indigo-400 transition flex items-center gap-1.5">
+          <i data-lucide="link-2" class="w-4 h-4"></i>
+          <span>GitHub / OpenClaw / URL</span>
+        </button>
+        <button id="tabAddZip" class="py-2.5 px-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+          <i data-lucide="file-archive" class="w-4 h-4"></i>
+          <span>Upload ZIP / Folder</span>
+        </button>
+        <button id="tabAddManual" class="py-2.5 px-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+          <i data-lucide="edit-3" class="w-4 h-4"></i>
+          <span>Buat Manual</span>
+        </button>
+      </div>
+
+      <!-- MODE 1: IMPORT FROM GITHUB / OPENCLAW / URL -->
+      <div id="panelAddUrl" class="p-6 space-y-4 overflow-y-auto flex-1 text-sm">
+        <div class="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-200 space-y-1">
+          <p class="font-bold flex items-center gap-1.5">
+            <i data-lucide="info" class="w-4 h-4 text-indigo-400"></i>
+            <span>Mendukung Repositori GitHub &amp; OpenClaw Skills:</span>
+          </p>
+          <ul class="list-disc list-inside space-y-0.5 text-slate-300 text-[11px] font-mono">
+            <li>GitHub Repo: <span class="text-indigo-300">https://github.com/owner/skill-repo</span></li>
+            <li>GitHub Subfolder / OpenClaw: <span class="text-indigo-300">https://github.com/openclaw/agent-skills/tree/main/skills/remote-validation</span></li>
+            <li>Raw SKILL.md: <span class="text-indigo-300">https://raw.githubusercontent.com/.../SKILL.md</span></li>
+          </ul>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">
+            GitHub / OpenClaw / Raw Markdown URL <span class="text-pink-400">*</span>
+          </label>
+          <input
+            id="inputImportUrl"
+            type="url"
+            required
+            placeholder="Paste URL GitHub atau OpenClaw di sini..."
+            class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono focus:border-indigo-500 focus:outline-none"
+          />
+        </div>
+
+        <!-- Quick Examples Pills -->
+        <div class="flex items-center gap-1.5 flex-wrap text-[11px]">
+          <span class="text-slate-500">Contoh Cepat:</span>
+          <button type="button" class="btn-sample-url px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono" data-url="https://github.com/openclaw/agent-skills/tree/main/skills/remote-validation">
+            openclaw/remote-validation
+          </button>
+          <button type="button" class="btn-sample-url px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono" data-url="https://github.com/openclaw/agent-skills/tree/main/skills/review-closeout">
+            openclaw/review-closeout
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Target Deployment Scope</label>
+            <select id="importUrlScope" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:border-indigo-500 focus:outline-none">
+              <option value="workspace">Workspace (.agents/skills) - Current Project</option>
+              <option value="global">Global (~/.gemini/config/skills) - All Projects</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">
+              Custom Name <span class="text-slate-500 font-normal">(opsional, otomatis jika kosong)</span>
+            </label>
+            <input
+              id="inputImportCustomName"
+              type="text"
+              placeholder="auto-detect"
+              class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono focus:border-indigo-500 focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <!-- Immediate Activation Switch -->
+        <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+              <i data-lucide="power" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-slate-200">Langsung Aktifkan Skill Ini (ON)</p>
+              <p class="text-[11px] text-slate-400">Otomatis dipasang ke target scope sehingga AI Agent langsung bisa menggunakannya</p>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="checkImportUrlActivate" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" class="modal-close px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition">
+            Cancel
+          </button>
+          <button id="btnSubmitImportUrl" class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium shadow-md shadow-indigo-600/30 transition flex items-center gap-2">
+            <i data-lucide="download-cloud" class="w-4 h-4"></i>
+            <span>Import to Library</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- MODE 2: UPLOAD ZIP / FOLDER -->
+      <div id="panelAddZip" class="hidden p-6 space-y-4 overflow-y-auto flex-1 text-sm">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">
+            Upload ZIP File (Hasil Download dari GitHub / OpenClaw)
+          </label>
+          <div id="dropZone" class="border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-2xl p-6 text-center cursor-pointer transition bg-slate-950/40">
+            <i data-lucide="upload-cloud" class="w-10 h-10 text-indigo-400 mx-auto mb-2"></i>
+            <p class="text-xs text-slate-200 font-medium">Klik untuk memilih file .zip atau drag &amp; drop ke sini</p>
+            <p id="zipFileName" class="text-[11px] text-slate-400 mt-1 font-mono">Belum ada file dipilih</p>
+            <input type="file" id="zipFileInput" accept=".zip" class="hidden" />
+          </div>
+        </div>
+
+        <div class="relative flex py-1 items-center">
+          <div class="flex-grow border-t border-slate-800"></div>
+          <span class="flex-shrink mx-4 text-xs text-slate-500 uppercase tracking-wider font-semibold">Atau Dari Folder Lokal</span>
+          <div class="flex-grow border-t border-slate-800"></div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">
+            Path Folder Lokal Hasil Clone
+          </label>
+          <input
+            id="inputLocalFolder"
+            type="text"
+            placeholder="e.g. C:\Users\User\Downloads\my-cloned-skill"
+            class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono focus:border-indigo-500 focus:outline-none"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Target Deployment Scope</label>
+            <select id="importZipScope" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:border-indigo-500 focus:outline-none">
+              <option value="workspace">Workspace (.agents/skills) - Current Project</option>
+              <option value="global">Global (~/.gemini/config/skills) - All Projects</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">
+              Custom Name <span class="text-slate-500 font-normal">(opsional)</span>
+            </label>
+            <input
+              id="inputImportZipCustomName"
+              type="text"
+              placeholder="auto-detect"
+              class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono focus:border-indigo-500 focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" class="modal-close px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition">
+            Cancel
+          </button>
+          <button id="btnSubmitImportZip" class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium shadow-md shadow-indigo-600/30 transition flex items-center gap-2">
+            <i data-lucide="package-plus" class="w-4 h-4"></i>
+            <span>Import File to Library</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- MODE 3: BUAT MANUAL DARI TEMPLATE -->
+      <form id="addSkillForm" class="hidden p-6 space-y-4 overflow-y-auto flex-1 text-sm">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Target Deployment Scope</label>
+            <select id="newSkillScope" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-sm focus:border-indigo-500 focus:outline-none">
+              <option value="workspace">Workspace (.agents/skills) - Current Project</option>
+              <option value="global">Global (~/.gemini/config/skills) - All Projects</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Starter Template</label>
+            <select id="newSkillTemplate" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-sm focus:border-indigo-500 focus:outline-none">
+              <option value="runbook">Standard Runbook / Operational Procedure</option>
+              <option value="tool">Scripted Tool Runner (with scripts/)</option>
+              <option value="testing">Testing & Code Quality Runbook</option>
+              <option value="blank">Blank Skill</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">
+            Skill Name <span class="text-indigo-400 font-normal">(lowercase, hyphenated, e.g. my-deploy-helper)</span>
+          </label>
+          <input
+            id="newSkillName"
+            type="text"
+            required
+            placeholder="my-custom-skill"
+            class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-sm font-mono focus:border-indigo-500 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-xs font-semibold text-slate-300">
+              Description <span class="text-pink-400 font-normal">*Critical for AI Agent Activation</span>
+            </label>
+            <span class="text-[11px] text-slate-500">Progressive disclosure trigger</span>
+          </div>
+          <textarea
+            id="newSkillDesc"
+            required
+            rows="2"
+            placeholder="Use this skill when the user asks to... (Tulis instruksi pemicu kapan AI harus memakai skill ini)"
+            class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-sm focus:border-indigo-500 focus:outline-none"
+          ></textarea>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+              <i data-lucide="power" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-slate-200">Langsung Aktifkan Skill Ini (ON)</p>
+              <p class="text-[11px] text-slate-400">Otomatis dipasang ke target scope sehingga AI Agent langsung bisa menggunakannya</p>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="checkActivateNow" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Optional Subdirectories</label>
+          <div class="flex flex-wrap items-center gap-3 text-xs text-slate-300">
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="checkScripts" class="rounded bg-slate-950 border-slate-800 text-indigo-600 focus:ring-0" />
+              <span>scripts/ <span class="text-slate-500">(helper scripts)</span></span>
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="checkReferences" class="rounded bg-slate-950 border-slate-800 text-indigo-600 focus:ring-0" />
+              <span>references/ <span class="text-slate-500">(docs/manuals)</span></span>
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="checkExamples" class="rounded bg-slate-950 border-slate-800 text-indigo-600 focus:ring-0" />
+              <span>examples/ <span class="text-slate-500">(code snippets)</span></span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-xs font-semibold text-slate-300">Skill Instructions (Markdown)</label>
+            <span class="text-[11px] text-slate-500">Body of SKILL.md</span>
+          </div>
+          <textarea
+            id="newSkillContent"
+            rows="8"
+            class="w-full font-mono text-xs px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:border-indigo-500 focus:outline-none leading-relaxed"
+          ></textarea>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" class="modal-close px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium shadow-md shadow-indigo-600/30 transition">
+            Save to Library
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Skill Detail & Edit Drawer / Modal -->
+  <div id="viewSkillModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div id="detailScopeIcon" class="w-9 h-9 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 id="detailSkillName" class="text-base font-bold text-white font-mono">skill-name</h2>
+              <span id="detailStatusBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                ACTIVE
+              </span>
+              <span id="detailScopeBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">
+                library
+              </span>
+            </div>
+            <p id="detailPath" class="text-xs text-slate-400 font-mono truncate max-w-lg">C:\path\to\skill</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Trigger Guide Button inside Detail -->
+          <button id="btnTriggerFromDetail" title="Cara Trigger Skill di Chat" class="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/25 text-xs font-semibold flex items-center gap-1.5 transition">
+            <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>Cara Trigger</span>
+          </button>
+
+          <!-- Toggle Button inside Detail -->
+          <button id="btnToggleFromDetail" title="Toggle Active / Inactive" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-2 transition">
+            <i data-lucide="power" class="w-3.5 h-3.5"></i>
+            <span id="btnToggleLabel">Turn OFF</span>
+          </button>
+
+          <button id="btnDeleteFromDetail" title="Delete Skill" class="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-medium flex items-center gap-1.5 transition">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>Delete</span>
+          </button>
+          <button class="modal-close p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 ml-2">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Detail Tabs -->
+      <div class="px-6 border-b border-slate-800 flex items-center gap-4 text-xs font-medium">
+        <button id="tabBtnPreview" class="py-2.5 border-b-2 border-indigo-500 text-indigo-400 transition flex items-center gap-1.5">
+          <i data-lucide="eye" class="w-4 h-4"></i>
+          <span>Overview & Instructions</span>
+        </button>
+        <button id="tabBtnEditor" class="py-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+          <i data-lucide="edit-3" class="w-4 h-4"></i>
+          <span>Edit SKILL.md</span>
+        </button>
+        <button id="tabBtnFiles" class="py-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+          <i data-lucide="folder-tree" class="w-4 h-4"></i>
+          <span>Files & Structure (<span id="detailFileCount">0</span>)</span>
+        </button>
+      </div>
+
+      <!-- Tab 1: Preview -->
+      <div id="tabContentPreview" class="p-6 overflow-y-auto flex-1 space-y-4">
+        <!-- Frontmatter info card -->
+        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Antigravity Description</span>
+            <span class="text-[10px] text-indigo-400 font-mono">Activation Trigger</span>
+          </div>
+          <p id="previewDescription" class="text-sm text-slate-200 leading-relaxed italic bg-slate-900/50 p-2.5 rounded-lg border border-slate-800/60">
+            ...
+          </p>
+        </div>
+
+        <!-- Rendered Markdown Body -->
+        <div class="p-5 rounded-xl bg-slate-950 border border-slate-800">
+          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Skill Content</div>
+          <div id="previewMarkdownBody" class="markdown-preview text-sm">
+            <!-- Rendered by marked -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Editor -->
+      <div id="tabContentEditor" class="hidden p-6 overflow-y-auto flex-1 space-y-4">
+        <div id="readOnlyWarning" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs flex items-center gap-2">
+          <i data-lucide="alert-triangle" class="w-4 h-4 flex-shrink-0"></i>
+          <span>This skill is marked read-only. Import it to your Library to edit a customizable copy!</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Description (YAML Frontmatter)</label>
+          <textarea id="editSkillDesc" rows="3" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-xs font-sans focus:border-indigo-500 focus:outline-none"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Markdown Body</label>
+          <textarea id="editSkillContent" rows="14" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono focus:border-indigo-500 focus:outline-none leading-relaxed"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button id="btnSaveSkill" class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium shadow-md shadow-indigo-600/30 transition flex items-center gap-1.5">
+            <i data-lucide="save" class="w-3.5 h-3.5"></i>
+            <span>Save Changes</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab 3: Files Explorer -->
+      <div id="tabContentFiles" class="hidden p-6 overflow-y-auto flex-1 space-y-4">
+        <div class="flex items-center justify-between">
+          <p class="text-xs text-slate-400">Directory structure for helper scripts, references, and examples.</p>
+        </div>
+        <div id="filesTreeContainer" class="p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-slate-300 space-y-1">
+          <!-- Tree injected here -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2.5 Trigger Guide Popup Modal -->
+  <div id="triggerGuideModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-gradient-to-r from-amber-950/20 via-slate-900 to-indigo-950/20">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center">
+            <i data-lucide="zap" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 id="triggerModalSkillName" class="text-base font-bold text-white font-mono">skill-name</h2>
+              <span id="triggerModalStatusBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                ACTIVE
+              </span>
+            </div>
+            <p class="text-xs text-slate-400">Panduan &amp; Cara Trigger Skill di AI Agent Antigravity</p>
+          </div>
+        </div>
+        <button class="modal-close p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto flex-1 space-y-5 text-sm">
+
+        <!-- Antigravity Trigger Mechanism Explanation -->
+        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="cpu" class="w-3.5 h-3.5 text-indigo-400"></i>
+              <span>Cara AI Antigravity Mendeteksi Skill Ini</span>
+            </span>
+            <span class="text-[10px] text-amber-400 font-mono bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">Progressive Disclosure</span>
+          </div>
+          <p id="triggerModalDesc" class="text-xs text-slate-300 leading-relaxed italic bg-slate-900/60 p-3 rounded-lg border border-slate-800/80">
+            ...
+          </p>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            💡 <strong class="text-slate-200">Tips:</strong> Pastikan skill dalam status <span id="triggerModalStatusInline" class="text-emerald-400 font-semibold">ON (Aktif)</span>. Anda tidak perlu menyalin isi file secara manual; cukup berikan instruksi/prompt dengan kata kunci terkait di chat Antigravity, dan AI akan otomatis membaca seluruh petunjuk instruksi skill ini.
+          </p>
+        </div>
+
+        <!-- Trigger Keywords Section -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-2 flex items-center gap-1.5">
+            <i data-lucide="tag" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span>Kata Kunci / Frasa Pemicu (Keywords)</span>
+          </label>
+          <div id="triggerModalKeywords" class="flex flex-wrap gap-1.5">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Subskills / Included Capabilities if any -->
+        <div id="triggerModalSubskillsContainer" class="hidden">
+          <label class="block text-xs font-semibold text-slate-300 mb-2 flex items-center gap-1.5">
+            <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-400"></i>
+            <span>Fitur / Sub-Skills yang Tercakup</span>
+          </label>
+          <div id="triggerModalSubskills" class="flex flex-wrap gap-1.5">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Copyable Prompt Examples -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+              <i data-lucide="message-square-quote" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>Contoh Prompt Siap Pakai (Klik untuk Salin)</span>
+            </label>
+            <span class="text-[10px] text-slate-500">Copy &amp; Paste ke Chat Antigravity</span>
+          </div>
+          <div id="triggerModalPrompts" class="space-y-2.5">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-3 border-t border-slate-800 bg-slate-950/50 flex items-center justify-between text-xs text-slate-400">
+        <span class="flex items-center gap-1.5">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Skill aktif otomatis terdaftar di runtime AI Agent</span>
+        </span>
+        <button type="button" class="modal-close px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium transition">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Workspace Switcher Modal -->
+  <div id="workspaceModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden p-6 space-y-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-emerald-600/20 text-emerald-400 flex items-center justify-center">
+          <i data-lucide="folder-git-2" class="w-5 h-5"></i>
+        </div>
+        <h2 class="text-base font-bold text-white">Switch Active Workspace</h2>
+      </div>
+      <p class="text-xs text-slate-400">Select any project root directory to manage its local <code class="text-indigo-400">.agents/skills</code>.</p>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Absolute Directory Path</label>
+        <input id="inputWorkspacePath" type="text" placeholder="e.g. E:\Programming\MyProject" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono" />
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button type="button" class="modal-close px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition">
+          Cancel
+        </button>
+        <button id="btnSaveWorkspace" class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium transition">
+          Update Workspace
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Delete Confirmation Modal -->
+  <div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden p-6 space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center">
+          <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h2 class="text-base font-bold text-white">Delete Skill?</h2>
+          <p class="text-xs text-slate-400">This action cannot be undone.</p>
+        </div>
+      </div>
+      <p class="text-xs text-slate-300">
+        Are you sure you want to delete <span id="deleteSkillNameSpan" class="font-mono font-bold text-rose-400">skill</span>?
+        All files inside its directory will be removed.
+      </p>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button type="button" class="modal-close px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition">
+          Cancel
+        </button>
+        <button id="btnConfirmDelete" class="px-5 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-medium transition">
+          Yes, Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

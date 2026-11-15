@@ -1,0 +1,25 @@
+{
+  "name": "antigravity-skill-manager",
+  "version": "1.0.0",
+  "description": "Interactive Web UI & Manager for Google Antigravity Skills",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "antigravity",
+    "skills",
+    "ai-agent",
+    "skill-manager"
+  ],
+  "author": "Antigravity Assistant",
+  "license": "MIT",
+  "dependencies": {
+    "adm-zip": "^0.6.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "fs-extra": "^11.3.0",
+    "gray-matter": "^4.0.3"
+  }
+}
