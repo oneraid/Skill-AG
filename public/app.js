@@ -1081,6 +1081,30 @@ async function handleCreateSkill(e) {
 // ==========================================
 
 const TRIGGER_KNOWLEDGE = {
+  'day-trader-skill': {
+    title: 'The Day Trader Skill Suite (11 Claude Skills)',
+    keywords: ['day trader', 'day-trader-skill', 'trader-scanner', 'trader-news', 'trader-entry', 'trader-exit', 'trader-timemachine', 'trader-pelosi', 'trader-risk', 'trader-budget', 'scan setups', 'stock breakout', 'opening range breakout'],
+    subskills: [
+      'Chart Scanner (trader-scanner)',
+      'News Monitor & SEC 8-K (trader-news)',
+      'Entry Timing (trader-entry)',
+      'Exit Planner & Targets (trader-exit)',
+      'Time Machine 10,000x Replay (trader-timemachine)',
+      'Capitol Hill / Pelosi Tracker (trader-pelosi)',
+      'Risk Manager Limits (trader-risk)',
+      'Position Budget Sizing (trader-budget)',
+      'Price Alerts (trader-alerts)',
+      'EDGAR Financial Analyst (trader-analyst)',
+      'Paper Broker Ticket (trader-broker)'
+    ],
+    tips: 'Sebutkan "day-trader-skill", "scan setups", "trader-entry", atau "trader-timemachine" untuk menjalankan analisis chart saham, kalkulasi odds Monte Carlo, atau monitoring berita pasar.',
+    prompts: [
+      'Gunakan day-trader-skill untuk memindai setup chart saham AS hari ini (opening range breakouts & bull flags)',
+      'Jalankan trader-timemachine pada ticker TSLA untuk replay simulasi probabilitas 10.000 sesi sebelum entry',
+      'Cek berita terbaru dan filing SEC untuk saham NVDA dengan trader-news, lalu rencanakan entry & exit-nya',
+      'Hitung position sizing dan budget risk untuk modal $10,000 dengan toleransi risiko 1% per trade menggunakan trader-budget'
+    ]
+  },
   'security-audit': {
     title: 'Cloudflare Multi-Phase Security Audit',
     keywords: ['security audit', 'security-audit', 'vulnerability review', 'pen test', 'pentest', 'audit security', 'threat model', 'trust boundary', 'cve'],
