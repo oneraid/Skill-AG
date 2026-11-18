@@ -11,7 +11,7 @@ A modern, fast, and intuitive Web UI to manage, import, create, configure, toggl
 
 ## 🌟 Fitur Utama (Key Features)
 
-- 📦 **19 Pre-bundled Top Skills Included**: Repositori ini sudah menyertakan 19 skill terbaik (Day Trader Skill suite, Frontend Desain, Anti-Slop, Cloudflare Security Audit, Claude Code Skills) di folder `bundled-skills/`. Saat dijalankan, aplikasi otomatis menyinkronkannya ke Library dan direktori global Antigravity Anda!
+- 📦 **20 Pre-bundled Top Skills Included**: Repositori ini sudah menyertakan 20 skill terbaik (JianYing / CapCut Video Automation, Day Trader suite, Frontend Desain, Anti-Slop, Cloudflare Security Audit, Claude Code Skills) di folder `bundled-skills/`. Saat dijalankan, aplikasi otomatis menyinkronkannya ke Library dan direktori global Antigravity Anda!
 - 📚 **Skill Library (Perpustakaan Skill)**: Kelola semua skill kustom Anda dalam satu perpustakaan terpusat dengan switch toggle **ON / OFF instant**.
 - ⚡ **Interactive Trigger Guide (`⚡ Cara Trigger`)**: Setiap skill memiliki popup modal yang merinci cara AI agent mendeteksinya, kata kunci (*keywords*), fitur sub-skills, dan **contoh prompt siap pakai (1-click copy)**.
 - 🔗 **GitHub & OpenClaw Importer**: Impor skill langsung dari repositori GitHub, subfolder/monorepo OpenClaw, atau raw `SKILL.md` URL.

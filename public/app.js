@@ -1081,6 +1081,25 @@ async function handleCreateSkill(e) {
 // ==========================================
 
 const TRIGGER_KNOWLEDGE = {
+  'jianying-editor-skill': {
+    title: 'JianYing Pro / CapCut AI Automation Skill',
+    keywords: ['jianying', 'jianying-editor', 'jianying-editor-skill', 'capcut', 'edit video', 'video automation', 'potong video', 'tambah subtitle', 'draft inspector', 'animasi video', 'tts video', 'bgm video'],
+    subskills: [
+      'Draft Inspector CLI (draft_inspector.py)',
+      'Media Asset Importer & Sync',
+      'Auto Exposure & Color Align',
+      'TTS & Auto Subtitle Generator',
+      'Transitions & Scene Effects',
+      'Cloud Music & Sound Effects',
+      'Compound Clip & Project Export'
+    ],
+    tips: 'Gunakan kata kunci "jianying", "capcut", atau "edit video" untuk mengotomasi alur kerja editing JianYing Pro / CapCut Desktop langsung dari AI agent.',
+    prompts: [
+      'Gunakan jianying-editor-skill untuk memeriksa draft video di JianYing / CapCut: jalankan draft_inspector.py list',
+      'Otomatisasi pengeditan video dengan jianying-editor-skill: impor klip video, tambahkan subtitle otomatis, dan sinkronkan musik latar',
+      'Tambahkan efek transisi dan animasi teks pada draft proyek CapCut / JianYing menggunakan jianying-editor-skill'
+    ]
+  },
   'day-trader-skill': {
     title: 'The Day Trader Skill Suite (11 Claude Skills)',
     keywords: ['day trader', 'day-trader-skill', 'trader-scanner', 'trader-news', 'trader-entry', 'trader-exit', 'trader-timemachine', 'trader-pelosi', 'trader-risk', 'trader-budget', 'scan setups', 'stock breakout', 'opening range breakout'],
