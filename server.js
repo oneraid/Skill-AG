@@ -524,8 +524,18 @@ app.delete('/api/library/:name', async (req, res) => {
     // Remove from library folder
     await fs.remove(librarySkillFolder);
 
-    // Remove from meta
-    delete meta[name];
+    // Also remove from bundled-skills if exists
+    const bundledSkillFolder = path.join(__dirname, 'bundled-skills', name);
+    if (await fs.pathExists(bundledSkillFolder)) {
+      await fs.remove(bundledSkillFolder);
+    }
+
+    // Mark as deleted in meta so auto-sync never revives it
+    meta[name] = {
+      name,
+      deleted: true,
+      deletedAt: new Date().toISOString()
+    };
     await saveLibraryMeta(meta);
 
     res.json({ success: true, message: `Skill "${name}" deleted from Library` });
@@ -1400,8 +1410,13 @@ async function syncBundledSkills() {
       const libSkillPath = path.join(LIBRARY_DIR, entry);
       const globalSkillPath = path.join(GLOBAL_SKILLS_DIR, entry);
 
-      // If missing from library or global, auto-install
-      if (!(await fs.pathExists(libSkillPath)) || !(await fs.pathExists(globalSkillPath))) {
+      // Do NOT auto-install if user has explicitly deleted or disabled this skill
+      if (meta[entry] && (meta[entry].deleted || meta[entry].isActive === false)) {
+        continue;
+      }
+
+      // Only auto-install if completely new (not in library AND never registered in meta)
+      if (!(await fs.pathExists(libSkillPath)) && !meta[entry]) {
         await fs.ensureDir(libSkillPath);
         await fs.copy(srcPath, libSkillPath, { overwrite: true });
 
