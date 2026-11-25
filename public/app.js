@@ -1081,6 +1081,24 @@ async function handleCreateSkill(e) {
 // ==========================================
 
 const TRIGGER_KNOWLEDGE = {
+  'rea-video': {
+    title: 'rea-video: Reverse-Engineer Any Video Shot-by-Shot',
+    keywords: ['rea-video', 'reverse engineer video', 'bongkar video', 'bedah video', 'cara bikin video ini', 'video breakdown', 'video.md', 'ai video or filmed', 'shot by shot', 'remake video', 'deconstruct video'],
+    subskills: [
+      'Shot-by-Shot Decomposition (11 Media Categories)',
+      'AI vs Real Footage / CGI / 3D Classification',
+      'Video Packaging & Subtitle Timeline (SRT/ASS)',
+      'Audio Stems & Sound Effect Timing (BGM / SFX)',
+      'Camera Framing, Lighting & Color Grade Analysis',
+      'Actionable Remake Plan & VIDEO.md Report Generator'
+    ],
+    tips: 'Gunakan kata kunci "rea-video", "bedah video", atau "bongkar video" saat memberikan referensi video untuk menganalisis setiap shot (apakah syuting asli, AI generated, 3D, atau animasi), mendeteksi editing pack, dan membuat rencana pembuatan ulang (remake blueprint).',
+    prompts: [
+      'Gunakan rea-video untuk membongkar video referensi ini secara shot-by-shot: apakah ini AI atau syuting asli, dan bagaimana cara me-remake-nya?',
+      'Bedah video sample.mp4 dengan rea-video: ekstrak breakdown timeline, analisis pencahayaan kamera, dan hasilkan laporan VIDEO.md',
+      'Jalankan rea-video decompose pada video iklan ini untuk mengidentifikasi BGM, sound effect timing, dan prompt AI yang digunakan'
+    ]
+  },
   'jianying-editor-skill': {
     title: 'JianYing Pro / CapCut AI Automation Skill',
     keywords: ['jianying', 'jianying-editor', 'jianying-editor-skill', 'capcut', 'edit video', 'video automation', 'potong video', 'tambah subtitle', 'draft inspector', 'animasi video', 'tts video', 'bgm video'],
