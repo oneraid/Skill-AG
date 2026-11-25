@@ -1,0 +1,160 @@
+---
+name: review
+description: Review and self-improvement loop for drawn-by-code. Use it after EVERY render or visible change to a scene, whenever the user gives feedback on a video ("this doesn't read", "faster", "I like X"), and when closing an experiment. Runs the automatic critique on real frames, fixes the scene and turns what was learned into permanent changes to the skills and the engine.
+---
+
+# Review: critique, fix and learn
+
+Every test has to leave the repo better than it found it. The loop has two halves: the
+**automatic critique** (without the user, before showing them anything) and the **user's
+feedback**. Both end the same way: in changes to the scene and, if the lesson
+generalizes, in changes to the skills or the engine.
+
+## A · Automatic critique (before showing the user anything)
+
+1. `node engine/review.mjs <scene.js>` → read `review/auto.md` and look at
+   `review/sheet.jpg` with the Read tool. Objective warnings (errors, Non-deterministic,
+   Cuts off the beat, still stretches) **are always fixed**, or you justify in `review.md`
+   why they are intentional.
+2. Full-size stills of the key moments:
+   `node engine/render.mjs <scene.js> --at 1.2,3.5,5.8` and look at them (out/stills/).
+   Look especially at the moments when text is read, the contacts (hands grabbing,
+   things colliding) and the last frame.
+3. Go through the **general checklist** (below) and the **style checklist** (in its
+   skill). Write each flaw as *what you see · at which second · why it fails*.
+4. Fix, go back to 1. **At most 3 automatic rounds**; if something doesn't improve in 3,
+   raise it with the user as an open question instead of going round in circles.
+5. Log the round in `review.md`: `### Round N (auto)`, what you saw, what you changed.
+
+Be harsh: the most common failure of self-critique is approving out of fatigue. If you
+hesitate between "it reads" and "it doesn't read", **it doesn't read**.
+
+### General checklist
+
+- **Legibility:** every text stays on screen at least ~0.4 s per short word + 1 s, with
+  enough contrast and without covering anything. Nothing important in the outer 5 % (in
+  vertical, keep the bottom 250 px and the top 150 free, where social apps put their
+  buttons).
+- **Clarity:** every shot is understood without sound and without explanation, and what
+  happens can be told in one sentence with a verb (if you can only describe the look, the
+  action is missing). A single focus of attention at a time; if two things move, one
+  leads.
+- **Density:** are there at least three layers (moving background, secondary elements,
+  protagonist)? Any moment with a single thing moving on an empty background?
+- **Motion:** anticipation and settle (nothing starts or stops dead unless on purpose),
+  ease curves, nothing still for more than 1 s except the ending, nothing jittering
+  unintentionally.
+- **Photosensitivity:** no more than 3 flashes per second (abrupt changes in overall
+  brightness). `review.mjs` measures them; in psychedelic videos it is mandatory.
+- **Rhythm:** cuts on the beat; visual hits (impacts, stamps, appearances) land on the
+  beat too.
+- **Origin and physics:** everything that emanates (steam, smoke, sparks, liquid, papers
+  coming out of a box) is visibly born at its source and not behind or above it. What comes out
+  from behind something (a sun over a horizon, a hand from a sleeve) is never drawn in front
+  of it, not even for a frame: step through the event frame by frame. Things
+  rest where they should and fall downward. Check it in a still of the instant it
+  appears.
+- **Continuity:** characters and objects identical across shots and to the approved style
+  test; gaze and movement direction consistent across cuts.
+- **Composition:** rule of thirds or deliberate symmetry, level horizon unless
+  intentional, consistent margins, clear size hierarchy.
+- **Accuracy:** nothing promises more than the source (website, brief). Third-party
+  brands only as generic icons.
+- **Ending:** the last frame holds up as a poster and the final message reads in full.
+- **Detail:** crop each element at full resolution (`render.mjs --at` and zoom, or
+  `reference.mjs compare --crop`) and hold it to the style's detail bar: separate pieces,
+  organic shapes, textures that say what the material is, real hands. «It reads» is not
+  enough; «it could be a frame of a finished film» is.
+- **The detail gate:** with a reference, `engine/detail.mjs` must PASS before anything is shown (CLAUDE.md → «The detail bar»); without one, crop every element at full resolution. Evident details are never left for the user to find. `--mask x,y,w,h` leaves tiles out only for what the reference shows and the scene must not copy (a third party's logo): never for something that is hard to match.
+- **Hands and brand:** at every contact frame check each hand (right side, right view,
+  never through what it holds; style skill → «Detail») and put the logo next to the
+  client's SVG at the same size.
+
+### Replicas and studies of a reference (`engine/reference.mjs`)
+
+Work from measurements, never from eyeballing:
+
+1. `sheets` for the shot list; exact cut frames from a per-frame colour probe (cuts land on
+   frames, not seconds; seek at `frame/24 − 0.004` or `-ss` may land a frame late).
+2. `colors` for every palette; `track --color` for anything that moves (centre, box, area
+   per frame): the reference animates on twos, so author **one row per drawing** (1/12 s)
+   with position, size, squash and expression, not a smooth curve.
+3. Build, then **measure your own render the same way** (render the stretch small, run the
+   same probe) to calibrate sizes before comparing by eye.
+4. `compare --times … --crop x,y,w,h` per element at full resolution until the side-by-side
+   shows the same pieces, shapes, colours, textures and layering. The diff number helps; the
+   eyes decide.
+5. The same goes for anything built from a source that is not a film: a character measured
+   from a model sheet, a logo, a traced map. Draw it alone at the source's size and compare
+   crops at 4× with the source (`--worst`-style: let the difference pick the places) before it
+   goes into a shot. Whole, a poorer copy reads as right; the user crops.
+6. Big replicas parallelise well: one file per object and one agent per group of objects,
+   each with a written brief (why, contract, tools, rules, report). Keep shared files
+   (choreography, common kit) with the lead and merge by file.
+
+## B · User feedback
+
+1. Show them the result: MP4 (`render.mjs`) and the contact sheet. Tell them in one line
+   what you fixed on your own and what doubts remain.
+2. Record their feedback **in English** in `review.md` (`### Round N (user)`): translated
+   faithfully from whatever language they wrote in, with spelling, grammar and hurried
+   phrasing corrected, never the raw original (the same in briefs, skills, code comments
+   and commit messages). Below it, what it means as concrete changes.
+3. Apply, go back to A.
+
+## C · Distill: from the experiment to the skills
+
+When closing each round with user feedback, and when closing the experiment, ask of each
+lesson: **would it help in another video?**
+
+| The lesson is about… | It goes to… |
+|---|---|
+| this particular video (this text, this brand) | only `review.md` |
+| the style (how the paper looks, the palette, the characters) | the `style-*` skill: *Rules*, *Checklist* or *Lessons* |
+| a client's or brand's rule (their typeface, banned motifs, claims) | the experiment's `brief.md` only, never a style skill: a style skill must hold for any client |
+| narrative, rhythm, script, legibility | `animate/SKILL.md` or the general checklist here |
+| a technical bug, something slow, a missing utility | fix it in `engine/` or in the kit and note it in `engine/SKILL.md` |
+| something the automatic review could have caught and didn't | extend `engine/review.mjs` |
+| sound | `sound/SKILL.md` |
+
+Lesson format: `- YYYY-MM-DD · <experiment> · <rule in the imperative, one line>`.
+Write rules, not anecdotes: "Stamps are seen from above, never sideways against a wall",
+not "the stamp in round 2 looked weird".
+
+**Skill maintenance:** when a *Lessons* section goes past ~15 entries, consolidate: move
+the recurring ones up to *Rules* or the *Checklist*, delete the obsolete ones. A long,
+contradictory skill is worse than a short one. If a lesson contradicts a rule, the most
+recent one confirmed by the user wins: fix the rule.
+
+Update the experiment's row in `sandbox/INDEX.md` and commit:
+`review(<experiment>): round N · <main lesson>`, with the skills touched in the same
+commit, so it shows which test produced which change.
+
+## Lessons
+
+<!-- Lessons about the review process itself. -->
+- 2026-09-24 · coffee-first · The sheet at 480 px doesn't show facial details (closed eyes that seemed to look down): always look at full-size stills of close-ups.
+- 2026-09-24 · coffee-first · When you spot by eye a flaw that `review.mjs` could have measured (a hole at the edge), extend `review.mjs` and test it with a deliberately broken scene before trusting it.
+- 2026-09-24 · coffee-first · I judged the steam by its shape and not by its origin, and the user saw it came out from behind the cup. For every element that appears, ask where it comes from (now in the checklist).
+- 2026-09-24 · exquisite-corpse · The image-difference «jumps» warning gave false positives on dense patterns and didn't measure what matters: `review.mjs` now counts flashes frame by frame and separates jumps from cuts (tested with a strobing scene).
+- 2026-09-24 · exquisite-corpse · In a long piece, first review with `--times` the instants you changed; the full sheet only when closing the round.
+- 2026-09-24 · exquisite-corpse · I approved a jellyfish that was only a look: my critique checked style and legibility but not "what happens?". It is now in the checklist (Clarity and Density).
+- 2026-09-24 · what-do-you-love · I «compared» a replica at whole-frame size and called it close; the user saw at once that the dog, the girl and the ring had no craft. Crop every element at full resolution, and measure (track/colors/segmentation) instead of guessing positions and sizes.
+- 2026-09-29 · external trailer · Show new graphics already cut into the film, in order and at speed: a test reel that grouped the pieces by type (four title cards in a row) was judged as the film («it needs dynamism; scene, title, scene, title»).
+- 2026-09-29 · external trailer · A character composited into a photo must respect every layer the photo puts in front of it: masking only a box's front face, while paper hanging over its rim stayed behind the character, read as pasted. Trace the foreground pieces from the photo zoomed 4× and repaint them over the character. And a character standing right against an object it overlaps reads as floating: set it clear of the object and keep its shadow on the ground while it hops.
+- 2026-09-29 · external police parody · A highlight on a line of printed text inside a character is invisible when the character's own pose covers that line (hands over the chest). If the story is "the data comes out", make the data leave as its own object (a small card with a flash) and fly it toward the camera, first sideways so it never crosses the face, and away from the corner that holds the logo. Then cut to where it lands.
+- 2026-09-29 · external police parody · Two camera flashes 0.4 s apart trip the photosensitivity check (more than 3 brightness changes per second): space paired flashes a second apart instead of dimming them. Before placing characters on new photo backgrounds, render the plates with a labelled grid in scene units and read off table edges and horizons from it; guessing from the source image's pixels puts feet in the air.
+- 2026-10-02 · product videos (four styles) · A reviewer who only sees the film found what the author's own checks missed (effects louder than the voice, a final consonant cut, flaps cutting a logo), because the checks measured less than the ear hears: when a check passes and a person disagrees, test the instrument first (band, weighting, silence handling, a transcription that fills in missing letters) before defending the result.
+- 2026-10-02 · product videos · Never retry a check in a loop keyed on its exit code when it exits non-zero on a mismatch by design: the loop repeated eighteen paid calls three times. Run it once and read the diff.
+- 2026-11-11 · runnin-down-a-dream · Never send a «concept sketch» of a character to judge an idea: the user judges it as the film («it needs quite a lot of work… I prefer detail and going down to the pixel over something quick»). Describe the idea in words, and show the character only once it has passed its own sheet at the detail bar.
+- 2026-11-11 · runnin-down-a-dream round 11 · When the user points at a moment and the stills of that moment look right, do not answer a neighbouring problem: render the stretch in order, a drawing at a time, at the film's own scale, and look for the picture they sent (the user had to say it twice: the first fix was to the close shot, the fault was in the wide shot two seconds later and only when played in sequence).
+- 2026-11-11 · runnin-down-a-dream round 11 · «Almost all the errors are layering mistakes»: of ten faults the user found in a 4:24 film, eight were drawing order (a pit's outline over the character in front of it, a road over a cactus, water on a wall over an umbrella, a bowl clipped at a body's side, a trident behind a frame on the wall, a lever's knob under its own label, a cuff floating on a neighbour, a fork over another player's hand). Timing, acting and colour passed; layers did not, because a contact sheet cannot show a 30 px overlap. Make it its own pass before anything is shown: every shot at three moments, at full size, every region where two things overlap cropped 1:1 and asked «which is nearer the camera, and is that the one on top?». On a long film give that pass to reviewers who did not draw it (one per stretch, read-only, a table of time / A over B / crop back to the lead): the author reads the overlap as intended.
+- 2026-11-14 · pier-pressure · The user follows the session and may see any image rendered in it: a first line-up of six characters, made to test the rig, was judged beside the reference («look at the difference in the level of quality»). Bring one character to the bar on its own sheet, against crops of the reference at the same size, before lining up the cast.
+- 2026-11-14 · pier-pressure · For a style taken from stills, study the reference in crops at 3× by part (head, hands, body, boots) and write down how each is built and its measured proportions before coding the part; comparing whole frames only shows that something is off, not what.
+- 2026-11-14 · pier-pressure round 6 · Three rejections on the same axis («look at the difference», «it still has a very long way to go», «very rough, undeveloped drawings») while each round added finish: when the user repeats a verdict, stop polishing and compare one element with the reference at the same size to find what kind of thing is wrong (here proportions and construction, not detail), change the method, and prove it on one element before touching the rest.
+- 2026-11-14 · pier-pressure round 20 · «The cut-outs are not right; they lose details and colours»: the user judged crops of the film against the model sheets they had approved, and the round before had only checked the animation. When a shot is built from approved art, the detail check of every round includes that art: crop the render and the source side by side at the same size. A drawing judged alone passes; beside its source the missing creases, plaster and wheel hubs show at once.
+- 2026-11-15 · pier-pressure round 24 · «Are you sure you can't access it?»: a download refused early in the session was reported as impossible many rounds later, after the user had allowed the host; it worked at the first try, and a round of work had been built around not having the files. Before telling the user something cannot be done from the session, try it again now: «it failed before» is a note with a date, not a fact, and whatever changed since (network, permissions, a new tool) may have lifted it.
+- 2026-11-16 · pier-pressure round 48 · «There is no need to waste time doing the full render just to see a few seconds»: while one section is being worked on, render THAT section only (`node engine/render.mjs <scene.js> --from 0 --to 11 --size 1280 --audio <mix> --out <file>`: seconds, with the sound in its place) and show that clip; the full film is rendered once, when the section is approved. A full 32 s render cost seven minutes a round for a seven-second change. And after two rejections of the same section, show stills of the next idea before rendering anything.
+- 2026-11-16 · pier-pressure round 55 · A fix inside one shot of a finished film does not need the film rendered again: render that shot's frames alone (`--from`/`--to` at the frames where the shot starts and ends, read from the edit) and splice them in with ffmpeg (`[0:v]trim=end_frame=A[a];[1:v]…[b];[0:v]trim=start_frame=B[c];concat=n=3`, the mix as audio); then count the frames and compare a frame before, inside and after the piece with the old film. Thirty seconds instead of seven minutes. After any change to how a character ends a shot, look at the next shot that shows them (a contact sheet shows it: she ended on her board and the next shot still had her standing beside it).
+- 2026-11-17 · micrograph-test · A shot stuck above the gate with every body in place (a cross-match per body said ≤ 4 px) moved only when the difference was drawn with its sign after the gate's blur (ours lighter in red, darker in blue): rings round every body mean the edge profile is wrong, blobs mean the tone is, a gradient means the field is. Tile means were all within ±10 and said nothing. Make that map as soon as a second round of tuning does not halve the distance to the limit.
+- 2026-11-17 · micrograph-test · An overlay of ours that the reference lacks (a scale bar) is flagged by the gate as «too busy» where it sits: leave it in the measured frame and say so in review.md rather than mask it or hide it at the match instant; the mask is only for what must not be copied.

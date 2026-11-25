@@ -1081,6 +1081,25 @@ async function handleCreateSkill(e) {
 // ==========================================
 
 const TRIGGER_KNOWLEDGE = {
+  'drawn-by-code': {
+    title: 'drawn-by-code: Code-Driven Canvas Animation Engine (20 Styles)',
+    keywords: ['drawn-by-code', 'animate', 'code animation', 'canvas animation', 'animasi kode', 'motion graphics code', 'paper-cutout', 'claymation', 'risograph', 'pixel art animation', 'kinetic typography'],
+    subskills: [
+      'Orchestrator & Shot Scripting (skills/animate)',
+      'Deterministic Frame-by-Frame Engine (Motion.scene)',
+      '20 Artistic Style Kits (paper, clay, riso, pixel, etc.)',
+      'Hand Rigs & Anatomy Kinetics (skills/hands)',
+      'Audio & Musical Grid Alignment (skills/sound)',
+      'Procedural Transitions & Effects (skills/transitions)',
+      'Automated Cadence & Motion Review (engine/review.mjs)'
+    ],
+    tips: 'Sebutkan "drawn-by-code", "animate", atau minta animasi berbasis kode Canvas / WebGL (misal gaya paper-cutout, clay, risograph, blueprint). Agen akan merancang brief, menyusun script frame-by-frame murni JavaScript, dan merendernya via engine.',
+    prompts: [
+      'Gunakan drawn-by-code dengan gaya paper-cutout untuk membuat animasi logo reveal berdurasi 5 detik',
+      'Buatkan scene animasi Motion.scene dengan style clay3d untuk promo produk berdurasi 6 detik (120 BPM cut)',
+      'Inisialisasi proyek animasi baru dengan drawn-by-code: node engine/new.mjs promo --style risograph --duration 8'
+    ]
+  },
   'rea-video': {
     title: 'rea-video: Reverse-Engineer Any Video Shot-by-Shot',
     keywords: ['rea-video', 'reverse engineer video', 'bongkar video', 'bedah video', 'cara bikin video ini', 'video breakdown', 'video.md', 'ai video or filmed', 'shot by shot', 'remake video', 'deconstruct video'],
