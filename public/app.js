@@ -1081,6 +1081,24 @@ async function handleCreateSkill(e) {
 // ==========================================
 
 const TRIGGER_KNOWLEDGE = {
+  'motion-design': {
+    title: 'LottieFiles Universal Motion Design Principles for UI',
+    keywords: ['motion-design', 'motion-design-skill', 'lottiefiles motion', 'ui animation principles', 'disney principles ui', 'easing animation', 'choreography', 'micro-interactions'],
+    subskills: [
+      'Disney 12 Animation Principles Adapted for UI',
+      'Timing & Easing Tables (Deceleration, Acceleration, Spring)',
+      'Motion Personality Archetypes (Playful, Premium, Corporate, Energetic)',
+      'Choreography & 1/3 Rule for Multi-Element Scenes',
+      'Entrance, Exit, State Feedback & Micro-interactions',
+      'Creator MCP File Rendering (Lottie, dotLottie, MP4, GIF)'
+    ],
+    tips: 'Gunakan kata kunci "motion-design" atau minta penerapan prinsip animasi UI (Disney principles, easing curves, choreography) saat membuat animasi tombol, modal, transisi halaman, atau micro-interaction di CSS, Framer Motion, GSAP, maupun Lottie.',
+    prompts: [
+      'Terapkan motion-design dari LottieFiles untuk merancang animasi micro-interaction tombol dan input feedback form ini',
+      'Gunakan prinsip motion-design (easing & choreography 1/3 rule) untuk transisi masuk multi-elemen kartu dashboard',
+      'Rancang animasi modal dialog dengan motion-design: tentukan timing, deceleration curve saat masuk, dan acceleration saat keluar'
+    ]
+  },
   'claude-animation-base': {
     title: 'Claude Animation Base (p5.js + p5.brush Hand-Painted Cartoons)',
     keywords: ['claude-animation-base', 'clawd animation', 'p5.brush', 'p5.js animation', 'kartun cat air', 'hand-painted cartoon', 'animasi clawd', 'boiling line'],
