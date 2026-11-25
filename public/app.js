@@ -1081,6 +1081,22 @@ async function handleCreateSkill(e) {
 // ==========================================
 
 const TRIGGER_KNOWLEDGE = {
+  'claude-animation-base': {
+    title: 'Claude Animation Base (p5.js + p5.brush Hand-Painted Cartoons)',
+    keywords: ['claude-animation-base', 'clawd animation', 'p5.brush', 'p5.js animation', 'kartun cat air', 'hand-painted cartoon', 'animasi clawd', 'boiling line'],
+    subskills: [
+      'Clawd Character & 31 Acted Emotions',
+      'Handmade Watercolor & Boiling Linework (p5.brush)',
+      'Arc Motion & Viewer Read Timing Rules',
+      'Headless Chrome & FFmpeg MP4 Render Pipeline'
+    ],
+    tips: 'Gunakan kata kunci "claude-animation-base", "clawd animation", atau "p5.brush animation" saat ingin membuat video animasi kartun 2D berkarakter Clawd bergaya cat air lukisan tangan dengan garis tinta yang bergetar hidup (boiling linework).',
+    prompts: [
+      'Gunakan claude-animation-base untuk membuat video animasi 15 detik Clawd yang sedang mengejar kupu-kupu',
+      'Rancang storyboard dan scene animasi p5.js/p5.brush untuk adegan Clawd tersesat di hutan (baca ANIMATION_GUIDE.md)',
+      'Jalankan pipeline render headless node render.mjs --clip --out=out/video.mp4 untuk animasi Clawd'
+    ]
+  },
   'claude-shorts-skills': {
     title: 'Claude Shorts Animation Studio (Three.js + Remotion)',
     keywords: ['claude-shorts-skills', 'shorts skill', 'bikin shorts', 'video shorts 3d', 'remotion animation', 'tiktok animation', 'reels animation'],
