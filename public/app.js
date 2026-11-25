@@ -1081,6 +1081,61 @@ async function handleCreateSkill(e) {
 // ==========================================
 
 const TRIGGER_KNOWLEDGE = {
+  'claude-shorts-skills': {
+    title: 'Claude Shorts Animation Studio (Three.js + Remotion)',
+    keywords: ['claude-shorts-skills', 'shorts skill', 'bikin shorts', 'video shorts 3d', 'remotion animation', 'tiktok animation', 'reels animation'],
+    subskills: ['3D Cartoon Story Shorts', 'Word-Synced Green-screen Captions', 'Minecraft Short Scripts (What-if & Ladder)', 'Multi-Agent Minecraft Storytelling (2:15)'],
+    tips: 'Gunakan kata kunci "claude-shorts-skills" untuk mengakses paket studio animasi vertikal (YouTube Shorts, TikTok, Reels) berbasis Three.js & Remotion tanpa AI video generator.',
+    prompts: [
+      'Gunakan claude-shorts-skills untuk memproduksi video vertikal 3D kartun berdurasi 60 detik tentang sejarah penemuan listrik',
+      'Buatkan naskah Minecraft shorts dan animasi kartun 3D pendukung menggunakan claude-shorts-skills',
+      'Siapkan video cerita Minecraft "In this town" lengkap dengan subtitle kata-per-kata green screen'
+    ]
+  },
+  'cartoon-3d-short': {
+    title: '3D Cartoon Story Shorts (Three.js + Remotion)',
+    keywords: ['cartoon-3d-short', 'cartoon short', 'kartun 3d shorts', 'cerita 3d vertikal', 'three.js remotion', '2d in 3d world', 'formula b story', 'formula c story'],
+    subskills: ['Shot Planning & Pacing (55-70 s)', 'Three.js 3D Scene Assembly', 'Character Acting Presets', 'Sound Mix & SFX', 'Shorts Safe Zone QA Check'],
+    tips: 'Sebutkan "cartoon-3d-short" atau "kartun 3D shorts" untuk membuat video animasi vertikal bergaya karakter 2D di dunia 3D yang dirender lokal menggunakan Three.js dan Remotion.',
+    prompts: [
+      'Gunakan cartoon-3d-short untuk membuat short 65 detik tentang jembatan gantung pertama yang runtuh karena derap tentara',
+      'Bikin video vertikal cerita sejarah bergaya 3D diorama kartun dengan formula dimusuhi lalu terbukti benar (Formula B)',
+      'Rancang shot plan dan scene Three.js Remotion untuk cerita animasi 3D 60 detik'
+    ]
+  },
+  'captions': {
+    title: 'Word-Synced Green-Screen Captions for Shorts',
+    keywords: ['captions', 'caption greenscreen', 'teks ikut suara', 'word synced captions', 'subtitle greenscreen', 'shorts captions', 'subtitle tiktok'],
+    subskills: ['Word-by-Word Voice Timing', 'Pure Green (#00FF00) Background for Keylight', 'Shorts UI Safe-Zone Compliance', 'Solid Outline & Hard Drop Shadow'],
+    tips: 'Sebutkan "captions", "caption greenscreen", atau "teks ikut suara" saat ingin membuat klip subtitle terpisah dengan latar belakang hijau yang tersinkronisasi presisi per kata dengan suara narasi.',
+    prompts: [
+      'Buatkan caption greenscreen sinkron kata per kata untuk audio narasi ini mengikuti format Shorts',
+      'Generate klip subtitle greenscreen dengan gaya teks putih uppercase, garis tepi hitam, dan safe zone YouTube Shorts',
+      'Sinkronkan teks narasi ke video green-screen caption yang siap di-keying di After Effects atau Premiere'
+    ]
+  },
+  'minecraft-shorts': {
+    title: 'Minecraft Short Scripts (What-if & Ladder Formulas)',
+    keywords: ['minecraft-shorts', 'script minecraft', 'naskah minecraft', 'formula what if minecraft', 'formula ladder minecraft', 'how you built minecraft'],
+    subskills: ['Formula What-If (Rule Collision Test)', 'Formula C Ladder (Evolution Build)', 'Bilingual Narration (EN + ID)', 'In-Game Test Protocol & ReplayMod Shot List'],
+    tips: 'Ketik "minecraft-shorts" atau "naskah minecraft" untuk menghasilkan naskah video pendek Minecraft dengan dua formula viral teruji (What-if rule-collision atau Formula C evolution ladder) dalam Bahasa Indonesia maupun Inggris.',
+    prompts: [
+      'Tuliskan naskah Minecraft shorts berdurasi 45 detik dengan formula What-If dalam Bahasa Indonesia',
+      'Buatkan naskah video pendek Minecraft formula tangga evolusi (Formula C) tentang pembuatan automatic iron farm',
+      'Rancang script Minecraft shorts rule-collision: apa yang terjadi jika loyalty trident dilempar ke dimensi lain?'
+    ]
+  },
+  'minecraft-story': {
+    title: 'Minecraft Storytelling Video (In This World / Town)',
+    keywords: ['minecraft-story', 'cerita minecraft', 'in this world minecraft', 'in this town minecraft', 'storytelling minecraft', 'scarpet replaymod'],
+    subskills: ['Originality Check & VO Script (2:15)', 'Storyboard & LAYOUT.json Anchors', 'Multi-Agent Production Wave (Set, Visual, Camera)', 'Automated Shot Compilation & Clipping Checks'],
+    tips: 'Gunakan kata kunci "minecraft-story" untuk orkestrasi penuh video storytelling fiktif Minecraft 2 menit 15 detik ("In this world / In this town") dengan alur kerja sub-agent multi-layer code-driven.',
+    prompts: [
+      'Orkestrasi video storytelling Minecraft format "In this town" durasi 2:15 dengan tema blok yang terlupakan',
+      'Bikin alur produksi script, skin karakter, dan layout set untuk video cerita Minecraft in this world',
+      'Jalankan pipeline minecraft-story untuk memeriksa collision dan kompilasi shot kamera ReplayMod'
+    ]
+  },
   'drawn-by-code': {
     title: 'drawn-by-code: Code-Driven Canvas Animation Engine (20 Styles)',
     keywords: ['drawn-by-code', 'animate', 'code animation', 'canvas animation', 'animasi kode', 'motion graphics code', 'paper-cutout', 'claymation', 'risograph', 'pixel art animation', 'kinetic typography'],
